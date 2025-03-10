@@ -6,15 +6,19 @@ const Board = () => {
   const [tasks, setTasks] = useState([]);
   const [taskName, setTaskName] = useState("");
   const statusOrder = ["open", "inProgress", "review", "completed"];
+  const[taskDeadline, setTaskDeadline] = useState("");
 
 
   const addTask = () => {
     const newTask = {
       id: Date.now(),
       name: taskName,
+      deadline: taskDeadline,
       status: "open"
     }
     setTasks([...tasks,newTask]);
+    setTaskName("");
+    setTaskDeadline("");
   }
 
   const moveTask = (taskId, direction) => {
@@ -57,6 +61,13 @@ const Board = () => {
           placeholder="Enter a new task..."
           value={taskName}
           onChange={(e) => setTaskName(e.target.value)}
+        />
+        <input
+          type="text"
+          className="border p-2 w-1/3 rounded-md max-w-3xs"
+          placeholder="Enter Deadline"
+          value={taskDeadline}
+          onChange={(e) => setTaskDeadline(e.target.value)}
         />
         <button className="ml-2 bg-green-600 text-white px-4 py-2 rounded-md "
          onClick={addTask}>

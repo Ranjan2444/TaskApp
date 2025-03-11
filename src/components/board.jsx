@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import TaskList from "./tasklist";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const Board = () => {
 
@@ -10,6 +12,7 @@ const Board = () => {
 
 
   const addTask = () => {
+    if (taskName.trim() === "") return; 
     const newTask = {
       id: Date.now(),
       name: taskName,
@@ -21,40 +24,25 @@ const Board = () => {
     setTaskDeadline("");
   }
 
-  const moveTask = (taskId, direction) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          const currentIndex = statusOrder.indexOf(task.status);
-          let newIndex = currentIndex;
-  
-          if (direction === "forward" && currentIndex < statusOrder.length - 1) {
-            newIndex++;
-          } 
-        
-          else if (direction === "backward" && currentIndex > 0) {
-            newIndex--;
-          }
-  
-          if (newIndex === currentIndex) return task;
+  const moveTask = (taskId, newStatus) => {
+  setTasks((prevTasks) =>
+    prevTasks.map((task) => {
+      // Prevent moving tasks back to "Open"
+      if (task.id === taskId && newStatus === "open" && task.status !== "open") {
+        return task;  // Don't update if trying to move to "Open"
+      }
 
-          const updatedTask = { ...task, status: statusOrder[newIndex] };
-  
-          console.log(`Task "${updatedTask.name}" moved to: ${updatedTask.status}`);
-  
-          return updatedTask;
-        }
-        return task;
-      })
-    );
-  };
+      return task.id === taskId ? { ...task, status: newStatus } : task;
+    })
+  );
+};
+
   
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-
       {/* Add Task section */}
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-center mb-4 gap-1">
         <input
           type="text"
           className="border p-2 w-1/3 rounded-md"
@@ -63,7 +51,7 @@ const Board = () => {
           onChange={(e) => setTaskName(e.target.value)}
         />
         <input
-          type="text"
+          type="date"
           className="border p-2 w-1/3 rounded-md max-w-3xs"
           placeholder="Enter Deadline"
           value={taskDeadline}
@@ -79,12 +67,13 @@ const Board = () => {
       
       {/* Task list */}
       <div className="flex flex-col sm:flex-row justify-center gap-6 w-full">
-        <TaskList title="Open" tasks={tasks.filter(task => task.status == "open")} moveTask= {moveTask} />
-        <TaskList title="Inprogress" tasks={tasks.filter(task => task.status == "inProgress")} moveTask= {moveTask}/>
-        <TaskList title="Review" tasks={tasks.filter(task => task.status == "review")} moveTask= {moveTask}/>
-        <TaskList title="Completed" tasks={tasks.filter(task => task.status == "completed")} moveTask= {moveTask} />
+        <TaskList title="Open" tasks={tasks.filter(task => task.status == "open")} moveTask= {moveTask} status= "open"/>
+        <TaskList title="Inprogress" tasks={tasks.filter(task => task.status == "inProgress")} moveTask= {moveTask} status= "inProgress"/>
+        <TaskList title="Review" tasks={tasks.filter(task => task.status == "review")} moveTask= {moveTask} status= "review"/>
+        <TaskList title="Completed" tasks={tasks.filter(task => task.status == "completed")} moveTask= {moveTask} status= "completed"/>
       </div>
       </div>
+      
     </div>
   );
 };

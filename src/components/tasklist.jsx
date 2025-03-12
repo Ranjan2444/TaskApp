@@ -2,21 +2,14 @@ import React from "react";
 import Task from "./task";
 import { useDrop } from "react-dnd";
 
-const TaskList = ({ title, tasks, moveTask, status }) => {
-
-  const columnColors = {
-    // Open : "bg-yellow-200",
-    // Inprogress : "bg-yellow-200",
-    // Review : "bg-yellow-200",
-    // Completed : "bg-green-400",
-  };
+const TaskList = ({ title, tasks, moveTask, status,removeTask }) => {
 
   const [{ isOver }, drop] = useDrop({
     accept: "TASK",
     drop: (item) => {
-      console.log("Dropped task with id:", item.id);
-      console.log("Current task status:", item.status);
-      console.log("Target status:", status);
+      // console.log("Dropped task with id:", item.id);
+      // console.log("Current task status:", item.status);
+      // console.log("Target status:", status);
       // Ensure tasks are not dropped back into "Open" unless it's already open
       if (status !== "open" || item.status !== "open") {
         moveTask(item.id, status);  // Call moveTask to update the status
@@ -41,7 +34,7 @@ const TaskList = ({ title, tasks, moveTask, status }) => {
       <h2 className="underline decoration-green-500 text-xl font-white mb-3 text-center">{title}</h2>
       <div className="space-y-4">
       {tasks.length > 0 ? (
-          tasks.map((task) => <Task key={task.id} task={task} moveTask={moveTask} />)
+          tasks.map((task) => <Task key={task.id} task={task} moveTask={moveTask} removeTask= {removeTask} />)
         ) : (
           <p className="text-gray-400 text-center">No tasks</p>
         )}  
